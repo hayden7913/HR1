@@ -1,4 +1,4 @@
-/*let data = [
+/*const data = [
 	{
 		"name": "Berkeley Free Clinic",
 		"city": "Berkeley",
@@ -16,53 +16,59 @@
 		"city": "Oakland",
 		"category": "Food"
 	}
-];*/
+]*/
 
-const renderHtml= (data) => {
+const renderHtml = (filterItems) => {
 
-	let cities = data.map(entry => entry.city);
-let cats = data.map(entry => entry.category);
-
-	let select = cities
-	.filter((entry, idx) => {return cities.indexOf(entry) == idx})	
+	let select = filterItems.select
 	.map(entry => `<option value="${entry}">${entry}</option>`);
 
-	let checkBoxes = cats
-	.filter((entry, idx) => {return cats.indexOf(entry) == idx})	
+	let checkBoxes = filterItems.checkBoxes
 	.map(entry => `<input type="checkbox" value="${entry}">${entry}`);
 	
 	$("select").html(select);
 	$("#check").html(checkBoxes);
 }
 
-const processData = (data) => {
-	renderHtml(data);
-	initSubmitHandler();
+/*const renderListing = (listing) => {
+	Object.keys(listing).map(key => `<span class="description">${key.toUpperCase()}${listing[key]}</span>`)
+}*/
+
+const renderResults = (filteredData) => {
+	$("#results").text(JSON.stringify(filteredData));		 	
+}
+
+
+const processData = (filterItems) => {
+	renderHtml(filterItems);
+	initSubmitHandler(filterItems);
 }
 
 const getData = () => {
 	$.get("/getData", undefined, processData);
 }
 
-const renderResults = (data) => {
-	console.log(data);
+const callback = (filteredData) => {
+	renderResults(filteredData);		 	
 }
 
-const initSubmitHandler = () => {
+const initSubmitHandler = (data) => {
 	$("form").on("submit", (e) => {
 	e.preventDefault();
 
-	let params = {};
+	let filters = {};
 	let city = $("select").val();
 	let checked = [];
 	$("#check :checked").each( function() {
 		checked.push($(this).val());
 	});	
 
-	params.city = city;
-	params.cats = checked;
+	filters.city = city;
+	filters.category = checked;
 
-	$.get("/getResults", params, renderResults);
+	$.getJSON('/getFilters', filters, callback);
+
+	renderResults(data, filters);
 
 	});
 
@@ -70,7 +76,6 @@ const initSubmitHandler = () => {
 
 const main = () => {
 	getData();
-	//initSubmitHandler();
 
 }
 
