@@ -30,10 +30,6 @@ const renderHtml = (filterItems) => {
 	$("#check").html(checkBoxes);
 }
 
-/*const renderListing = (listing) => {
-	Object.keys(listing).map(key => `<span class="description">${key.toUpperCase()}${listing[key]}</span>`)
-}*/
-
 const renderResults = (filteredData) => {
 	$("#results").text(JSON.stringify(filteredData));		 	
 }
